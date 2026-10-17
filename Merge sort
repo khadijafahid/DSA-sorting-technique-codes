@@ -1,0 +1,45 @@
+#include <iostream>
+#include <vector>
+#include <chrono>
+#include <random>
+#include <algorithm>
+using namespace std;
+using namespace chrono;
+
+void merge(vector<int>& a, vector<int>& tmp, int l, int m, int r) {
+    int i = l, j = m + 1, k = l;
+    while (i <= m && j <= r) tmp[k++] = (a[i] <= a[j]) ? a[i++] : a[j++];
+    while (i <= m) tmp[k++] = a[i++];
+    while (j <= r) tmp[k++] = a[j++];
+    for (int x = l; x <= r; x++) a[x] = tmp[x];
+}
+
+void mergeSortRec(vector<int>& a, vector<int>& tmp, int l, int r) {
+    if (l >= r) return;
+    int m = l + (r - l) / 2;
+    mergeSortRec(a, tmp, l, m);
+    mergeSortRec(a, tmp, m + 1, r);
+    merge(a, tmp, l, m, r);
+}
+
+void mergeSort(vector<int>& a) {
+    vector<int> tmp(a.size());
+    mergeSortRec(a, tmp, 0, (int)a.size() - 1);
+}
+
+int main() {
+    const int N = 100000;
+    mt19937 rng(42);
+    uniform_int_distribution<int> dist(0, 1000000);
+    vector<int> a(N);
+    for (int& x : a) x = dist(rng);
+
+    auto start = high_resolution_clock::now();
+    mergeSort(a);
+    auto end = high_resolution_clock::now();
+
+    cout << "Merge Sort, size " << N << endl;
+    cout << "Sorted: " << (is_sorted(a.begin(), a.end()) ? "yes" : "no") << endl;
+    cout << "Time taken: " << duration<double>(end - start).count() << " seconds" << endl;
+    return 0;
+}
