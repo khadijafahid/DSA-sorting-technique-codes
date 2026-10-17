@@ -1,0 +1,37 @@
+#include <iostream>
+#include <vector>
+#include <chrono>
+#include <random>
+#include <algorithm>
+using namespace std;
+using namespace chrono;
+
+void insertionSort(vector<int>& a) {
+    int n = a.size();
+    for (int i = 1; i < n; i++) {
+        int key = a[i];
+        int j = i - 1;
+        while (j >= 0 && a[j] > key) {
+            a[j + 1] = a[j];
+            j--;
+        }
+        a[j + 1] = key;
+    }
+}
+
+int main() {
+    const int N = 100000;
+    mt19937 rng(42);
+    uniform_int_distribution<int> dist(0, 1000000);
+    vector<int> a(N);
+    for (int& x : a) x = dist(rng);
+
+    auto start = high_resolution_clock::now();
+    insertionSort(a);
+    auto end = high_resolution_clock::now();
+
+    cout << "Insertion Sort, size " << N << endl;
+    cout << "Sorted: " << (is_sorted(a.begin(), a.end()) ? "yes" : "no") << endl;
+    cout << "Time taken: " << duration<double>(end - start).count() << " seconds" << endl;
+    return 0;
+}
